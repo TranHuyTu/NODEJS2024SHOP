@@ -9,6 +9,10 @@ const app = express();
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
+app.use(express.json());
+app.use(express.urlencoded({
+    extended: true,
+}));
 
 // init db
 require('./dbs/init.mongodb');
@@ -16,11 +20,7 @@ const {countConnect, checkOverload} = require('./helpers/check.connect');
 checkOverload();
 
 // init routers
-app.get('/', (req, res, next) => {
-    return res.status(200).json({
-        message:"Welcome to NODEJS"
-    })
-})
+app.use('/',require('./routes'))
 
 // handling error 
 
