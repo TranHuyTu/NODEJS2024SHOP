@@ -1,5 +1,5 @@
 const app = require("./src/app");
-const {app: {port}} = require('./src/configs/congif.mongdb')
+const {app: {port}} = require('./src/configs/config.mongdb')
 
 const POST = port || 3056;
 

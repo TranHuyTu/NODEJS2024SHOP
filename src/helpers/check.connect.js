@@ -5,7 +5,7 @@ const os = require('os');
 const process = require('process');
 const _SECONDS = 6000000; 
 
-const countConnect = ()=>{
+const countConnect = () => {
     const numberConnection = mongodb.connections.length;
     console.log(`Number of connections ::${numberConnection}`)
 
