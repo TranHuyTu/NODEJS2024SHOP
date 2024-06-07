@@ -64,6 +64,7 @@ class RedisErrorResponse extends ErrorResponse{
 }
 
 module.exports = {
+    ErrorResponse,
     ConflictResponseError,
     BadRequestError, 
     AuthFailureError,

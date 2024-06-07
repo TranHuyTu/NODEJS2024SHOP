@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.use(authenticationV2);
 
-router.post('/review', asyncHandler(inventoryController.addStockToInventory));
+router.post('', asyncHandler(inventoryController.addStockToInventory));
+router.post('/addProduct', asyncHandler(inventoryController.addProductInventory));
 
 module.exports = router

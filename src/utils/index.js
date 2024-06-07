@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const {Types} = require('mongoose')
 
-const convertToObjectIdMongodb = id=> new Types.ObjectId(id);
+const convertToObjectIdMongodb = id => new Types.ObjectId(id);
 
 const getInfoData = ({ fileds = [], object = {} }) => {
     return _.pick( object, fileds)
@@ -42,11 +42,27 @@ const updateNestedObjectParser = obj => {
     return final;
 }
 
+// replacePlaceholder
+const replacePlaceholder = ( template, params )=>{
+    Object.keys(params).forEach( k => {
+        const placeholder = `{{${k}}}`;
+        template = template.replace( new RegExp( placeholder, 'g'), params[k] );
+    });
+
+    return template
+}
+
+const randomProductId = _=>{
+    return Math.floor(Math.random()*899999+100000);
+}
+
 module.exports = {
     getInfoData, 
     getSelectData,
     unGetSelectData,
     removeUndefinedObject,
     updateNestedObjectParser,
-    convertToObjectIdMongodb
+    convertToObjectIdMongodb,
+    replacePlaceholder,
+    randomProductId
 }

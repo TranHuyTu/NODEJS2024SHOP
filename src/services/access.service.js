@@ -8,6 +8,7 @@ const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
 const { BadRequestError, AuthFailureError, ForbiddenError} = require('../core/error.response');
 const { findByEmail } = require("./shop.service");
+const { findUserByEmail } = require('../models/repositories/user.repo');
 
 const RoleShop = {
     SHOP: 'SHOP',
@@ -68,7 +69,8 @@ class AccessService {
         if(keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not refreshed');
 
         const foundShop = await findByEmail({ email });
-        if(!foundShop) throw new AuthFailureError(' Shop not registered 2');
+        const foundUser = await findUserByEmail({usr_email: email});
+        if(!foundShop && !foundUser) throw new AuthFailureError(' Shop not registered 2');
 
         const tokens = await createTokenPair({userId, email}, keyStore.publicKey, keyStore.privateKey);
         
@@ -89,7 +91,6 @@ class AccessService {
 
     static logout = async ( keyStore ) => {
         const delKey = await KeyTokenService.removeKeyById( keyStore._id );
-        console.log( delKey );
         return delKey;
     }
 

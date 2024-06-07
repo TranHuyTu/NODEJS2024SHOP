@@ -4,6 +4,7 @@ const express = require('express');
 const { default: helmet } = require('helmet');
 const morgan = require('morgan');
 const app = express();
+const cors = require('cors');
 
 // init middleware
 app.use(morgan("dev"));
@@ -14,11 +15,24 @@ app.use(express.urlencoded({
     extended: true,
 }));
 
+app.use(cors({
+  origin: 'http://localhost:3000' // Hoặc '*' để cho phép tất cả các nguồn gốc
+}));
+
+//test pub,sub Redis
+// require('./test/inventory.test');
+// const productTest = require('./test/product.test');
+
+// setTimeout(()=>{
+//     productTest.purchaseProduct('product:002', 10);
+// },100);
+
+
 // init db
 require('./dbs/init.mongodb');
 const {countConnect, checkOverload} = require('./helpers/check.connect');
-const initRedis = require('./dbs/init.redis');
-initRedis.initRedis();
+// const initRedis = require('./dbs/init.redis');
+// initRedis.initRedis();
 countConnect();
 checkOverload();
 

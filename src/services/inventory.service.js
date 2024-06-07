@@ -8,7 +8,8 @@ const {
 
 const {
     BadRequestError
-} = require('../core/error.response')
+} = require('../core/error.response');
+const { convertToObjectIdMongodb } = require('../utils');
 
 class InventoryService{
 
@@ -19,12 +20,12 @@ class InventoryService{
         location = '37-73'
     }){
         const product = await getProductById(productId);
-        if(product) throw new BadRequestError('The product does not exist!!!');
+        if(!product) throw new BadRequestError('The product does not exist!!!');
 
         const query = { inven_shopId: shopId, inven_productId: productId },
         updateSet = {
-            $in: {
-                inven_stock: stock,
+            $inc: {
+                inven_stock: +stock,
             },
             $set: {
                 inven_location: location
@@ -33,6 +34,23 @@ class InventoryService{
         options = {upsert: true, new: true};
 
         return await inventory.findOneAndUpdate(query, updateSet, options)
+    }
+
+    static async addProductInventory({
+        stock,
+        productId,
+        shopId,
+        location = '37-73'
+    }){
+        const product = await getProductById(productId);
+        if(!product) throw new BadRequestError('The product does not exist!!!');
+
+        return await inventory.create({
+            inven_productId: convertToObjectIdMongodb(productId),
+            inven_location: location,
+            inven_stock: stock,
+            inven_shopId: convertToObjectIdMongodb(shopId)
+        })
     }
 }
 
