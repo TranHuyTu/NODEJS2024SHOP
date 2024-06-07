@@ -6,8 +6,10 @@ const {
 } = require('../core/error.response');
 const { cart } = require("../models/cart.model");
 const {
-    getProductById
-} = require("../models/repositories/product.repo")
+    getProductById,
+    getProductByProductId
+} = require("../models/repositories/product.repo");
+const { convertToObjectIdMongodb } = require('../utils');
 /**
  * Key features: Cart Service
  * -add product to cart
@@ -32,7 +34,7 @@ class CartService {
     }
 
     static async updateUserCartQuantity({ userId, product }){
-        const { productId, quantity } = product;
+        const { productId, quantity, productType} = product;
         const query = {
             cart_userId: userId,
             'cart_products.productId': productId,
@@ -41,6 +43,26 @@ class CartService {
         updateSet = {
             $inc: {
                 'cart_products.$.quantity': quantity,
+            },
+            $set:{
+                'cart_products.$.productType': productType,
+            } 
+        }, options = { upsert: true, new: true};
+
+        return await cart.findOneAndUpdate( query, updateSet, options );  
+    }
+
+    static async updateUserCart({ userId, product }){
+        const { productId, quantity, productType} = product;
+        const query = {
+            cart_userId: userId,
+            'cart_products.productId': productId,
+            cart_state: 'active' 
+        },
+        updateSet = {
+            $set:{
+                'cart_products.$.quantity': quantity,
+                'cart_products.$.productType': productType,
             } 
         }, options = { upsert: true, new: true};
 
@@ -49,6 +71,12 @@ class CartService {
 
     /// END REPO CART ///
     static async addToCart({ userId, product = {} }){
+        console.log(userId, product)
+        userId = parseInt(userId, 10);
+        product.productId = parseInt(product.productId, 10);
+        product.quantity = parseInt(product.quantity, 10);
+        product.price = parseInt(product.price, 10);
+
         const userCart = await cart.findOne({ cart_userId: userId });
         if(!userCart) return await CartService.createUserCart({ userId, product });
 
@@ -61,7 +89,7 @@ class CartService {
         }
 
         //nếu giỏ hàng tồn tại và có sản phẩm đó rồi
-        return await CartService.updateUserCartQuantity({ userId, product })
+        return await CartService.updateUserCart({ userId, product })
     }
 
     //update cart
@@ -87,13 +115,10 @@ class CartService {
             productId,
             quantity,
             old_quantity,
+            productType
         } = shop_order_ids[0]?.item_products[0];
 
-        console.log(productId,
-            quantity,
-            old_quantity);
-
-        const foundProduct = await getProductById(productId);
+        const foundProduct = await getProductByProductId(productId);
 
         if(!foundProduct) throw new NotFoundError("Product not exist");
 
@@ -109,7 +134,8 @@ class CartService {
             userId,
             product: {
                 productId,
-                quantity: quantity - old_quantity
+                quantity: quantity - old_quantity,
+                productType
             }
         })
     }
@@ -137,7 +163,7 @@ class CartService {
 
     static async getListUserCart({ userId }){
         return await cart.findOne({ 
-            cart_userId: +userId 
+            cart_userId: userId 
         }).lean();
     }
 }

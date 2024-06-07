@@ -7,6 +7,7 @@ const COLLECTION_NAME = 'Orders';
 
 const orderSchema = new Schema({
     order_userId: { type: Number, required: true },
+    /* order_shopId: {type: Schema.Types.ObjectId, ref: 'Shop'},*/
     order_checkout: { type: Object, default: {} },
     /*
     order_checkout = {
@@ -25,7 +26,7 @@ const orderSchema = new Schema({
     order_payment: { type: Object, default: {} },
     order_products: {type: Array, required: true },
     order_trackingNumber: { type: String, default: '#000010002424' },
-    order_status: { type: String, anum: ['pending', 'confirmed', 'shipped', 'canceled', 'delivered'], default: 'pending' }
+    order_status: { type: String, enum: ['pending', 'confirmed', 'shipped', 'shipping', 'canceled', 'delivered', 'refunded', 'completed'], default: 'pending' }
 },{
     collection: COLLECTION_NAME,
     timestamps: {
