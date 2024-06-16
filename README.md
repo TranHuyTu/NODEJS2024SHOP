@@ -14,12 +14,18 @@ Hãy bắt đầu mua sắm và trải nghiệm dịch vụ hàng đầu tại N
 ## Cài đặt
 
 1. **Clone dự án**: Sử dụng lệnh `git clone` để tải về bản sao của dự án.
+   
    git clone https://github.com/TranHuyTu/NODEJS2024SHOP.git
+   
 2. **Cài đặt các gói phụ thuộc**:
+  
    cd NODEJS2024SHOP
    npm install
-3. **Chạy dự án**:
+   
+4. **Chạy dự án**:
+   
    npm start
+   
 
 ## Sử dụng
 
